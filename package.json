@@ -48,6 +48,9 @@
     "type": "https",
     "url": "https://github.com/curlykay/element.git"
   },
+  "publishConfig": {
+    "registry": "http://156.11.1.117:8899/repository/anshare-npm-hosted/"
+  },
   "homepage": "http://element.eleme.io",
   "keywords": [
     "eleme",
