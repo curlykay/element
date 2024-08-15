@@ -1,5 +1,6 @@
 import LayoutObserver from './layout-observer';
 import { mapStates } from './store/helper';
+import { getFixedColumnsCellStyle } from './util';
 
 export default {
   name: 'ElTableFooter',
@@ -50,21 +51,22 @@ export default {
         border="0">
         <colgroup>
           {
-            this.columns.map(column => <col name={ column.id } key={column.id} />)
+            this.columns.map(column => <col name={column.id} key={column.id} />)
           }
           {
             this.hasGutter ? <col name="gutter" /> : ''
           }
         </colgroup>
-        <tbody class={ [{ 'has-gutter': this.hasGutter }] }>
+        <tbody class={[{ 'has-gutter': this.hasGutter }]}>
           <tr>
             {
               this.columns.map((column, cellIndex) => <td
                 key={cellIndex}
-                colspan={ column.colSpan }
-                rowspan={ column.rowSpan }
-                class={ [...this.getRowClasses(column, cellIndex), 'el-table__cell'] }>
-                <div class={ ['cell', column.labelClassName] }>
+                colspan={column.colSpan}
+                rowspan={column.rowSpan}
+                style={this.getCellStyle(column, cellIndex)}
+                class={[...this.getRowClasses(column, cellIndex), 'el-table__cell']}>
+                <div class={['cell', column.labelClassName]}>
                   {
                     sums[cellIndex]
                   }
@@ -113,6 +115,8 @@ export default {
       isAllSelected: 'isAllSelected',
       leftFixedLeafCount: 'fixedLeafColumnsLength',
       rightFixedLeafCount: 'rightFixedLeafColumnsLength',
+      fixedColumnsCellStyles: states => getFixedColumnsCellStyle(states.fixedColumns || []),
+      rightFixedColumnsCellStyle: states => getFixedColumnsCellStyle(states.rightFixedColumns || [], true),
       columnsCount: states => states.columns.length,
       leftFixedCount: states => states.fixedColumns.length,
       rightFixedCount: states => states.rightFixedColumns.length
@@ -135,14 +139,43 @@ export default {
         return (index < this.leftFixedCount) || (index >= this.columnsCount - this.rightFixedCount);
       }
     },
+    getFixedColumnCellStyle(column) {
+
+      const leftColumn = this.fixedColumnsCellStyles[column.id];
+      if (leftColumn) {
+        // console.log(leftColumn, column.id);
+        return {
+          left: leftColumn.offset + 'px'
+        };
+      }
+      const rightColumn = this.rightFixedColumnsCellStyle[column.id];
+      if (rightColumn) {
+        return {
+          right: rightColumn.offset + 'px'
+        };
+      }
+      return null;
+
+    },
+    getCellStyle(column, cellIndex) {
+      return this.getFixedColumnCellStyle(column);
+
+    },
+
+    isColumnFixed(column) {
+      return (this.fixedColumnsCellStyles[column.id] || this.rightFixedColumnsCellStyle[column.id]);
+    },
 
     getRowClasses(column, cellIndex) {
       const classes = [column.id, column.align, column.labelClassName];
       if (column.className) {
         classes.push(column.className);
       }
-      if (this.isCellHidden(cellIndex, this.columns, column)) {
-        classes.push('is-hidden');
+      // if (this.isCellHidden(cellIndex, this.columns, column)) {
+      //   classes.push('is-hidden');
+      // }
+      if (this.isColumnFixed(column)) {
+        classes.push('is-fixed-cell');
       }
       if (!column.children) {
         classes.push('is-leaf');

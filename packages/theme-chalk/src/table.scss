@@ -53,7 +53,7 @@
       transform: rotate(90deg);
     }
 
-    > .el-icon {
+    >.el-icon {
       position: absolute;
       left: 50%;
       top: 50%;
@@ -142,9 +142,15 @@
     }
 
     &.is-hidden {
-      > * {
+      >* {
         visibility: hidden;
       }
+    }
+
+    &.is-fixed-cell {
+      position: sticky;
+      z-index: 30;
+      background-color: inherit;
     }
   }
 
@@ -156,6 +162,7 @@
 
   @include m(small) {
     font-size: 12px;
+
     .el-table__cell {
       padding: 8px 0;
     }
@@ -163,6 +170,7 @@
 
   @include m(mini) {
     font-size: 12px;
+
     .el-table__cell {
       padding: 6px 0;
     }
@@ -190,7 +198,7 @@
     user-select: none;
     background-color: $--table-header-background-color;
 
-    > .cell {
+    >.cell {
       display: inline-block;
       box-sizing: border-box;
       position: relative;
@@ -204,7 +212,7 @@
       }
     }
 
-    &.required > div::before {
+    &.required>div::before {
       display: inline-block;
       content: "";
       width: 8px;
@@ -247,7 +255,7 @@
     border: $--table-border;
 
     @include share-rule(border-pseudo) {
-      content: '';
+      content: "";
       position: absolute;
       background-color: $--table-border-color;
       z-index: 1;
@@ -312,7 +320,7 @@
     box-shadow: $--table-fixed-box-shadow;
 
     &::before {
-      content: '';
+      content: "";
       position: absolute;
       left: 0;
       bottom: 0;
@@ -378,6 +386,7 @@
 
   @include e(footer-wrapper) {
     margin-top: -1px;
+
     td.el-table__cell {
       border-top: $--table-border;
     }
@@ -402,33 +411,34 @@
     position: relative;
 
     @include when(scrolling-none) {
-      ~ .el-table__fixed,
-      ~ .el-table__fixed-right {
+
+      ~.el-table__fixed,
+      ~.el-table__fixed-right {
         box-shadow: none;
       }
     }
 
     @include when(scrolling-left) {
-      ~ .el-table__fixed {
+      ~.el-table__fixed {
         box-shadow: none;
       }
     }
 
     @include when(scrolling-right) {
-      ~ .el-table__fixed-right {
+      ~.el-table__fixed-right {
         box-shadow: none;
       }
     }
 
     .el-table--border {
       @include when(scrolling-right) {
-        ~ .el-table__fixed-right {
+        ~.el-table__fixed-right {
           border-left: $--table-border;
         }
       }
 
       @include when(scrolling-left) {
-        ~ .el-table__fixed {
+        ~.el-table__fixed {
           border-right: $--table-border;
         }
       }
@@ -483,10 +493,11 @@
     & .el-table__body {
       & tr.el-table__row--striped {
         td.el-table__cell {
-          background: #FAFAFA;
+          background: #fafafa;
         }
 
-        &.current-row td.el-table__cell, &.selection-row td.el-table__cell {
+        &.current-row td.el-table__cell,
+        &.selection-row td.el-table__cell {
           background-color: $--table-current-row-background-color;
         }
       }
@@ -495,16 +506,22 @@
 
   @include e(body) {
     tr.hover-row {
-      &, &.el-table__row--striped {
-        &, &.current-row, &.selection-row {
-          > td.el-table__cell {
+
+      &,
+      &.el-table__row--striped {
+
+        &,
+        &.current-row,
+        &.selection-row {
+          >td.el-table__cell {
             background-color: $--table-row-hover-background-color;
           }
         }
       }
     }
 
-    tr.current-row > td.el-table__cell, tr.selection-row > td.el-table__cell {
+    tr.current-row>td.el-table__cell,
+    tr.selection-row>td.el-table__cell {
       background-color: $--table-current-row-background-color;
     }
   }
@@ -527,23 +544,24 @@
     & i {
       color: $--color-info;
       font-size: 12px;
-      transform: scale(.75);
+      transform: scale(0.75);
     }
   }
 
   @include m(enable-row-transition) {
     .el-table__body td.el-table__cell {
-      transition: background-color .25s ease;
+      transition: background-color 0.25s ease;
     }
   }
 
   @include m(enable-row-hover) {
-    .el-table__body tr:hover > td.el-table__cell {
+    .el-table__body tr:hover>td.el-table__cell {
       background-color: $--table-row-hover-background-color;
     }
   }
 
   @include m(fluid-height) {
+
     .el-table__fixed,
     .el-table__fixed-right {
       bottom: 0;
@@ -551,7 +569,7 @@
     }
   }
 
-  [class*=el-table__row--level] {
+  [class*="el-table__row--level"] {
     .el-table__expand-icon {
       display: inline-block;
       width: 20px;

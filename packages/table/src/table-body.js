@@ -1,5 +1,5 @@
 import { arrayFindIndex } from 'element-ui/src/utils/util';
-import { getCell, getColumnByCell, getRowIdentity, objectEquals } from './util';
+import { getCell, getColumnByCell, getRowIdentity, objectEquals, getFixedColumnsCellStyle } from './util';
 import { getStyle, hasClass, removeClass, addClass } from 'element-ui/src/utils/dom';
 import ElCheckbox from 'element-ui/packages/checkbox';
 import ElTooltip from 'element-ui/packages/tooltip';
@@ -68,13 +68,19 @@ export default {
       leftFixedLeafCount: 'fixedLeafColumnsLength',
       rightFixedLeafCount: 'rightFixedLeafColumnsLength',
       columnsCount: states => states.columns.length,
+      fixedColumnsCellStyles: states => getFixedColumnsCellStyle(states.fixedColumns || []),
+      rightFixedColumnsCellStyle: states => getFixedColumnsCellStyle(states.rightFixedColumns || [], true),
       leftFixedCount: states => states.fixedColumns.length,
       rightFixedCount: states => states.rightFixedColumns.length,
       hasExpandColumn: states => states.columns.some(({ type }) => type === 'expand')
     }),
 
+    // columnsHidden() {
+    //   return this.columns.map((column, index) => this.isColumnHidden(index));
+    // },
+
     columnsHidden() {
-      return this.columns.map((column, index) => this.isColumnHidden(index));
+      return [];
     },
 
     firstDefaultColumnIndex() {
@@ -134,6 +140,29 @@ export default {
       }
     },
 
+    isColumnFixed(column) {
+      return (this.fixedColumnsCellStyles[column.id] || this.rightFixedColumnsCellStyle[column.id]);
+    },
+
+    getFixedColumnCellStyle(column) {
+
+      const leftColumn = this.fixedColumnsCellStyles[column.id];
+      if (leftColumn) {
+        // console.log(leftColumn, column.id);
+        return {
+          left: leftColumn.offset + 'px'
+        };
+      }
+      const rightColumn = this.rightFixedColumnsCellStyle[column.id];
+      if (rightColumn) {
+        return {
+          right: rightColumn.offset + 'px'
+        };
+      }
+      return null;
+
+    },
+
     getSpan(row, column, rowIndex, columnIndex) {
       let rowspan = 1;
       let colspan = 1;
@@ -157,6 +186,7 @@ export default {
     },
 
     getRowStyle(row, rowIndex) {
+
       const rowStyle = this.table.rowStyle;
       if (typeof rowStyle === 'function') {
         return rowStyle.call(null, {
@@ -201,25 +231,44 @@ export default {
 
       return classes;
     },
+    // getCellStyle(rowIndex, columnIndex, row, column) {
+    //   const cellStyle = this.table.cellStyle;
+    //   if (typeof cellStyle === 'function') {
+    //     return cellStyle.call(null, {
+    //       rowIndex,
+    //       columnIndex,
+    //       row,
+    //       column
+    //     });
+    //   }
+    //   return cellStyle;
+    // },
 
     getCellStyle(rowIndex, columnIndex, row, column) {
-      const cellStyle = this.table.cellStyle;
+      const baseStyle = this.getFixedColumnCellStyle(column);
+      let style = this.table.cellStyle;
       if (typeof cellStyle === 'function') {
-        return cellStyle.call(null, {
+        style = this.table.cellStyle.call(null, {
           rowIndex,
           columnIndex,
           row,
           column
         });
       }
-      return cellStyle;
+      return {
+        ...baseStyle,
+        ...style
+      };
     },
 
     getCellClass(rowIndex, columnIndex, row, column) {
       const classes = [column.id, column.align, column.className];
 
-      if (this.isColumnHidden(columnIndex)) {
-        classes.push('is-hidden');
+      // if (this.isColumnHidden(columnIndex)) {
+      //   classes.push('is-hidden');
+      // }
+      if (this.isColumnFixed(column)) {
+        classes.push('is-fixed-cell');
       }
 
       const cellClassName = this.table.cellClassName;
@@ -390,8 +439,8 @@ export default {
         return [[
           tr,
           <tr key={'expanded-row__' + tr.key}>
-            <td colspan={ this.columnsCount } class="el-table__cell el-table__expanded-cell">
-              { renderExpanded(this.$createElement, { row, $index, store: this.store }) }
+            <td colspan={this.columnsCount} class="el-table__cell el-table__expanded-cell">
+              {renderExpanded(this.$createElement, { row, $index, store: this.store })}
             </td>
           </tr>]];
       } else if (Object.keys(treeData).length) {

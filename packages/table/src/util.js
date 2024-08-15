@@ -271,3 +271,47 @@ export const objectEquals = function(objectA, objectB) {
   }
   return true;
 };
+
+/**
+ * 深度优先遍历树状结构
+ * 这个函数会根据 `reverse` 参数决定是正序还是逆序遍历数组，然后对每个节点执行 `processNode` 回调函数。如果节点有子节点，它会递归地遍历这些子节点，并将它们的结果合并到当前的累计值 `acc` 中。
+ *
+ * @param {Array} trees - 一个树状结构的数组，其中每个元素都是一个对象，具有 `children` 属性
+ * @param {*} acc - 累计值，用于存储遍历过程中的中间结果
+ * @param {boolean} [reverse=false] - 一个布尔值，指示是按正序还是逆序遍历树。默认为 `false`，即正序遍历
+ * @param {function} processNode - 一个回调函数，用于处理树中的每个节点。它接受3个参数：当前节点对象、累计值 `acc`和当前节点是否为叶子节点的布尔值，并应返回更新后的累计值
+ * @returns {*} - 最终的累计值，包含了对所有节点应用 `processNode` 回调后的结果
+ */
+function traverseTree(trees, acc, reverse = false, processNode) {
+  const reducer = reverse ? Array.prototype.reduceRight : Array.prototype.reduce;
+  function traverse(acc, node) {
+    const isLeaf = !node.children || node.children.length === 0;
+    processNode(node, acc, isLeaf);
+
+    if (!isLeaf) {
+      acc = reducer.call(node.children, traverse, acc);
+    }
+    return acc;
+  }
+  return reducer.call(trees, (acc, node) => traverse(acc, node), acc);
+}
+
+/**
+ * 获取固定列的cell style
+ * @param {固定列数组} fixedColumns
+ * @param {方位} fixedPostion  'left'|'right'
+ * @returns
+ */
+export function getFixedColumnsCellStyle(columns, reverse = false) {
+
+  const initialAcc = { result: {}, currentOffset: 0 };
+  function processNode(column, acc, isLeaf) {
+    acc.result[column.id] = { offset: acc.currentOffset };
+    if (isLeaf) {
+      acc.currentOffset += (column.realWidth || column.width || 0);
+    }
+  }
+  const result = traverseTree(columns, initialAcc, reverse, processNode).result;
+
+  return result;
+}
