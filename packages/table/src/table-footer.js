@@ -1,11 +1,12 @@
 import LayoutObserver from './layout-observer';
+import {FixedCalc} from './fixed-calc';
+
 import { mapStates } from './store/helper';
-import { getFixedColumnsCellStyle } from './util';
 
 export default {
   name: 'ElTableFooter',
 
-  mixins: [LayoutObserver],
+  mixins: [LayoutObserver, FixedCalc],
 
   render(h) {
     let sums = [];
@@ -115,8 +116,6 @@ export default {
       isAllSelected: 'isAllSelected',
       leftFixedLeafCount: 'fixedLeafColumnsLength',
       rightFixedLeafCount: 'rightFixedLeafColumnsLength',
-      fixedColumnsCellStyles: states => getFixedColumnsCellStyle(states.fixedColumns || []),
-      rightFixedColumnsCellStyle: states => getFixedColumnsCellStyle(states.rightFixedColumns || [], true),
       columnsCount: states => states.columns.length,
       leftFixedCount: states => states.fixedColumns.length,
       rightFixedCount: states => states.rightFixedColumns.length
@@ -124,21 +123,21 @@ export default {
   },
 
   methods: {
-    isCellHidden(index, columns, column) {
-      if (this.fixed === true || this.fixed === 'left') {
-        return index >= this.leftFixedLeafCount;
-      } else if (this.fixed === 'right') {
-        let before = 0;
-        for (let i = 0; i < index; i++) {
-          before += columns[i].colSpan;
-        }
-        return before < this.columnsCount - this.rightFixedLeafCount;
-      } else if (!this.fixed && column.fixed) { // hide cell when footer instance is not fixed and column is fixed
-        return true;
-      } else {
-        return (index < this.leftFixedCount) || (index >= this.columnsCount - this.rightFixedCount);
-      }
-    },
+    // isCellHidden(index, columns, column) {
+    //   if (this.fixed === true || this.fixed === 'left') {
+    //     return index >= this.leftFixedLeafCount;
+    //   } else if (this.fixed === 'right') {
+    //     let before = 0;
+    //     for (let i = 0; i < index; i++) {
+    //       before += columns[i].colSpan;
+    //     }
+    //     return before < this.columnsCount - this.rightFixedLeafCount;
+    //   } else if (!this.fixed && column.fixed) { // hide cell when footer instance is not fixed and column is fixed
+    //     return true;
+    //   } else {
+    //     return (index < this.leftFixedCount) || (index >= this.columnsCount - this.rightFixedCount);
+    //   }
+    // },
     getFixedColumnCellStyle(column) {
 
       const leftColumn = this.fixedColumnsCellStyles[column.id];

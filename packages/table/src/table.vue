@@ -97,7 +97,7 @@
       >
       </table-footer>
     </div>
-    <div
+    <!-- <div
       v-if="fixedColumns.length > 0 && !optimization"
       v-mousewheel="handleFixedMousewheel"
       class="el-table__fixed"
@@ -169,8 +169,8 @@
           }"
         ></table-footer>
       </div>
-    </div>
-    <div
+    </div> -->
+    <!-- <div
       v-if="rightFixedColumns.length > 0 && !optimization"
       v-mousewheel="handleFixedMousewheel"
       class="el-table__fixed-right"
@@ -245,13 +245,13 @@
           }"
         ></table-footer>
       </div>
-    </div>
+    </div> -->
     <div
-      v-if="rightFixedColumns.length > 0 && !optimization"
+      v-if="rightFixedColumns.length > 0"
       class="el-table__fixed-right-patch"
       ref="rightFixedPatch"
       :style="{
-        width: layout.scrollY ? layout.gutterWidth + 'px' : '0',
+        width: rightFixedPatchWidth + 'px',
         height: layout.headerHeight + 'px',
       }"
     ></div>
@@ -684,6 +684,13 @@ export default {
         width: this.bodyWidth,
         height
       };
+    },
+
+    rightFixedPatchWidth() {
+      if (this.rightFixedColumns.length === 0) {
+        return 0;
+      }
+      return this.layout.scrollY ? this.layout.gutterWidth : 0;
     },
 
     ...mapStates({

@@ -3,8 +3,9 @@ import { hasClass, addClass, removeClass } from 'element-ui/src/utils/dom';
 import ElCheckbox from 'element-ui/packages/checkbox';
 import FilterPanel from './filter-panel.vue';
 import LayoutObserver from './layout-observer';
+import {FixedCalc} from './fixed-calc';
+
 import { mapStates } from './store/helper';
-import { getFixedColumnsCellStyle } from './util';
 
 const getAllColumns = (columns) => {
   const result = [];
@@ -67,7 +68,7 @@ const convertToRows = (originColumns) => {
 export default {
   name: 'ElTableHeader',
 
-  mixins: [LayoutObserver],
+  mixins: [LayoutObserver, FixedCalc],
 
   render(h) {
     const originColumns = this.store.states.originColumns;
@@ -137,7 +138,7 @@ export default {
                   </th>))
                 }
                 {
-                  this.hasGutter ? <th class="el-table__cell gutter"></th> : ''
+                  this.hasGutter ? <th class="el-table__cell x'x'x'x"></th> : ''
                 }
               </tr>
             )
@@ -182,8 +183,6 @@ export default {
       isAllSelected: 'isAllSelected',
       leftFixedLeafCount: 'fixedLeafColumnsLength',
       rightFixedLeafCount: 'rightFixedLeafColumnsLength',
-      fixedColumnsCellStyles: states => getFixedColumnsCellStyle(states.fixedColumns || []),
-      rightFixedColumnsCellStyle: states => getFixedColumnsCellStyle(states.rightFixedColumns || [], true),
       columnsCount: states => states.columns.length,
       leftFixedCount: states => states.fixedColumns.length,
       rightFixedCount: states => states.rightFixedColumns.length
@@ -273,6 +272,8 @@ export default {
     },
 
     getHeaderCellStyle(rowIndex, columnIndex, row, column) {
+
+      console.log('11', this.tableLayout.gutterWidth);
       const baseStyle = this.getFixedColumnCellStyle(column);
       let style = this.table.headerCellStyle;
       if (typeof headerCellStyle === 'function') {

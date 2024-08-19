@@ -1,17 +1,18 @@
 import { arrayFindIndex } from 'element-ui/src/utils/util';
-import { getCell, getColumnByCell, getRowIdentity, objectEquals, getFixedColumnsCellStyle } from './util';
+import { getCell, getColumnByCell, getRowIdentity, objectEquals } from './util';
 import { getStyle, hasClass, removeClass, addClass } from 'element-ui/src/utils/dom';
 import ElCheckbox from 'element-ui/packages/checkbox';
 import ElTooltip from 'element-ui/packages/tooltip';
 import debounce from 'throttle-debounce/debounce';
 import LayoutObserver from './layout-observer';
+import {FixedCalc} from './fixed-calc';
 import { mapStates } from './store/helper';
 import TableRow from './table-row.js';
 
 export default {
   name: 'ElTableBody',
 
-  mixins: [LayoutObserver],
+  mixins: [LayoutObserver, FixedCalc],
 
   components: {
     ElCheckbox,
@@ -68,8 +69,6 @@ export default {
       leftFixedLeafCount: 'fixedLeafColumnsLength',
       rightFixedLeafCount: 'rightFixedLeafColumnsLength',
       columnsCount: states => states.columns.length,
-      fixedColumnsCellStyles: states => getFixedColumnsCellStyle(states.fixedColumns || []),
-      rightFixedColumnsCellStyle: states => getFixedColumnsCellStyle(states.rightFixedColumns || [], true),
       leftFixedCount: states => states.fixedColumns.length,
       rightFixedCount: states => states.rightFixedColumns.length,
       hasExpandColumn: states => states.columns.some(({ type }) => type === 'expand')
@@ -130,15 +129,15 @@ export default {
       return index;
     },
 
-    isColumnHidden(index) {
-      if (this.fixed === true || this.fixed === 'left') {
-        return index >= this.leftFixedLeafCount;
-      } else if (this.fixed === 'right') {
-        return index < this.columnsCount - this.rightFixedLeafCount;
-      } else {
-        return (index < this.leftFixedLeafCount) || (index >= this.columnsCount - this.rightFixedLeafCount);
-      }
-    },
+    // isColumnHidden(index) {
+    //   if (this.fixed === true || this.fixed === 'left') {
+    //     return index >= this.leftFixedLeafCount;
+    //   } else if (this.fixed === 'right') {
+    //     return index < this.columnsCount - this.rightFixedLeafCount;
+    //   } else {
+    //     return (index < this.leftFixedLeafCount) || (index >= this.columnsCount - this.rightFixedLeafCount);
+    //   }
+    // },
 
     isColumnFixed(column) {
       return (this.fixedColumnsCellStyles[column.id] || this.rightFixedColumnsCellStyle[column.id]);
@@ -148,12 +147,11 @@ export default {
 
       const leftColumn = this.fixedColumnsCellStyles[column.id];
       if (leftColumn) {
-        // console.log(leftColumn, column.id);
         return {
           left: leftColumn.offset + 'px'
         };
       }
-      const rightColumn = this.rightFixedColumnsCellStyle[column.id];
+      const rightColumn = this.bodyRightFixedColumnsCellStyle[column.id];
       if (rightColumn) {
         return {
           right: rightColumn.offset + 'px'

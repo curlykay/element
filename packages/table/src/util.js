@@ -302,9 +302,13 @@ function traverseTree(trees, acc, reverse = false, processNode) {
  * @param {方位} fixedPostion  'left'|'right'
  * @returns
  */
-export function getFixedColumnsCellStyle(columns, reverse = false) {
+export function getFixedColumnsCellStyle(columns, options = {}) {
+  const {
+    reverse = false,
+    offset = 0
+  } = options;
 
-  const initialAcc = { result: {}, currentOffset: 0 };
+  const initialAcc = { result: {}, currentOffset: offset };
   function processNode(column, acc, isLeaf) {
     acc.result[column.id] = { offset: acc.currentOffset };
     if (isLeaf) {
