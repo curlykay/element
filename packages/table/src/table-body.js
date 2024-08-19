@@ -5,7 +5,7 @@ import ElCheckbox from 'element-ui/packages/checkbox';
 import ElTooltip from 'element-ui/packages/tooltip';
 import debounce from 'throttle-debounce/debounce';
 import LayoutObserver from './layout-observer';
-import {FixedCalc} from './fixed-calc';
+import { FixedCalc } from './fixed-calc';
 import { mapStates } from './store/helper';
 import TableRow from './table-row.js';
 
@@ -28,7 +28,7 @@ export default {
     context: {},
     rowClassName: [String, Function],
     rowStyle: [Object, Function],
-    fixed: String,
+
     highlight: Boolean
   },
 
@@ -129,18 +129,8 @@ export default {
       return index;
     },
 
-    // isColumnHidden(index) {
-    //   if (this.fixed === true || this.fixed === 'left') {
-    //     return index >= this.leftFixedLeafCount;
-    //   } else if (this.fixed === 'right') {
-    //     return index < this.columnsCount - this.rightFixedLeafCount;
-    //   } else {
-    //     return (index < this.leftFixedLeafCount) || (index >= this.columnsCount - this.rightFixedLeafCount);
-    //   }
-    // },
-
     isColumnFixed(column) {
-      return (this.fixedColumnsCellStyles[column.id] || this.rightFixedColumnsCellStyle[column.id]);
+      return (this.fixedColumnsCellStyles[column.id] || this.rightFixedColumnsCellStyles[column.id]);
     },
 
     getFixedColumnCellStyle(column) {
@@ -151,7 +141,7 @@ export default {
           left: leftColumn.offset + 'px'
         };
       }
-      const rightColumn = this.bodyRightFixedColumnsCellStyle[column.id];
+      const rightColumn = this.bodyRightFixedColumnsCellStyles[column.id];
       if (rightColumn) {
         return {
           right: rightColumn.offset + 'px'
@@ -229,18 +219,6 @@ export default {
 
       return classes;
     },
-    // getCellStyle(rowIndex, columnIndex, row, column) {
-    //   const cellStyle = this.table.cellStyle;
-    //   if (typeof cellStyle === 'function') {
-    //     return cellStyle.call(null, {
-    //       rowIndex,
-    //       columnIndex,
-    //       row,
-    //       column
-    //     });
-    //   }
-    //   return cellStyle;
-    // },
 
     getCellStyle(rowIndex, columnIndex, row, column) {
       const baseStyle = this.getFixedColumnCellStyle(column);
@@ -262,9 +240,6 @@ export default {
     getCellClass(rowIndex, columnIndex, row, column) {
       const classes = [column.id, column.align, column.className];
 
-      // if (this.isColumnHidden(columnIndex)) {
-      //   classes.push('is-hidden');
-      // }
       if (this.isColumnFixed(column)) {
         classes.push('is-fixed-cell');
       }
@@ -416,7 +391,7 @@ export default {
           handleCellMouseLeave={this.handleCellMouseLeave}
           isSelected={this.store.isSelected(row)}
           isExpanded={this.store.states.expandRows.indexOf(row) > -1}
-          fixed={this.fixed}
+
         >
         </TableRow>
       );

@@ -29,14 +29,14 @@ export const FixedCalc = {
       return getFixedColumnsCellStyle(this.fixedColumns || []);
     },
 
-    rightFixedColumnsCellStyle() {
+    rightFixedColumnsCellStyles() {
       return getFixedColumnsCellStyle(this.rightFixedColumns || [], {
         reverse: true,
         offset: this.rightFixedPatchWidth
       });
     },
 
-    bodyRightFixedColumnsCellStyle() {
+    bodyRightFixedColumnsCellStyles() {
       return getFixedColumnsCellStyle(this.rightFixedColumns || [], {
         reverse: true
       });

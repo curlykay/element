@@ -84,7 +84,7 @@ export default {
   },
 
   props: {
-    fixed: String,
+
     store: {
       required: true
     },
@@ -108,7 +108,7 @@ export default {
     },
 
     hasGutter() {
-      return !this.fixed && this.tableLayout.gutterWidth;
+      return this.tableLayout.gutterWidth;
     },
 
     ...mapStates({
@@ -123,31 +123,16 @@ export default {
   },
 
   methods: {
-    // isCellHidden(index, columns, column) {
-    //   if (this.fixed === true || this.fixed === 'left') {
-    //     return index >= this.leftFixedLeafCount;
-    //   } else if (this.fixed === 'right') {
-    //     let before = 0;
-    //     for (let i = 0; i < index; i++) {
-    //       before += columns[i].colSpan;
-    //     }
-    //     return before < this.columnsCount - this.rightFixedLeafCount;
-    //   } else if (!this.fixed && column.fixed) { // hide cell when footer instance is not fixed and column is fixed
-    //     return true;
-    //   } else {
-    //     return (index < this.leftFixedCount) || (index >= this.columnsCount - this.rightFixedCount);
-    //   }
-    // },
+
     getFixedColumnCellStyle(column) {
 
       const leftColumn = this.fixedColumnsCellStyles[column.id];
       if (leftColumn) {
-        // console.log(leftColumn, column.id);
         return {
           left: leftColumn.offset + 'px'
         };
       }
-      const rightColumn = this.rightFixedColumnsCellStyle[column.id];
+      const rightColumn = this.rightFixedColumnsCellStyles[column.id];
       if (rightColumn) {
         return {
           right: rightColumn.offset + 'px'
@@ -158,11 +143,10 @@ export default {
     },
     getCellStyle(column, cellIndex) {
       return this.getFixedColumnCellStyle(column);
-
     },
 
     isColumnFixed(column) {
-      return (this.fixedColumnsCellStyles[column.id] || this.rightFixedColumnsCellStyle[column.id]);
+      return (this.fixedColumnsCellStyles[column.id] || this.rightFixedColumnsCellStyles[column.id]);
     },
 
     getRowClasses(column, cellIndex) {
@@ -170,9 +154,7 @@ export default {
       if (column.className) {
         classes.push(column.className);
       }
-      // if (this.isCellHidden(cellIndex, this.columns, column)) {
-      //   classes.push('is-hidden');
-      // }
+
       if (this.isColumnFixed(column)) {
         classes.push('is-fixed-cell');
       }

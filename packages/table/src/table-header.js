@@ -149,7 +149,7 @@ export default {
   },
 
   props: {
-    fixed: String,
+
     store: {
       required: true
     },
@@ -175,7 +175,7 @@ export default {
     },
 
     hasGutter() {
-      return !this.fixed && this.tableLayout.gutterWidth;
+      return this.tableLayout.gutterWidth;
     },
 
     ...mapStates({
@@ -212,23 +212,9 @@ export default {
   },
 
   methods: {
-    isCellHidden(index, columns) {
-      let start = 0;
-      for (let i = 0; i < index; i++) {
-        start += columns[i].colSpan;
-      }
-      const after = start + columns[index].colSpan - 1;
-      if (this.fixed === true || this.fixed === 'left') {
-        return after >= this.leftFixedLeafCount;
-      } else if (this.fixed === 'right') {
-        return start < this.columnsCount - this.rightFixedLeafCount;
-      } else {
-        return (after < this.leftFixedLeafCount) || (start >= this.columnsCount - this.rightFixedLeafCount);
-      }
-    },
 
     isCellFixed(column) {
-      return (this.fixedColumnsCellStyles[column.id] || this.rightFixedColumnsCellStyle[column.id]);
+      return (this.fixedColumnsCellStyles[column.id] || this.rightFixedColumnsCellStyles[column.id]);
 
     },
 
@@ -261,7 +247,7 @@ export default {
           left: leftColumn.offset + 'px'
         };
       }
-      const rightColumn = this.rightFixedColumnsCellStyle[column.id];
+      const rightColumn = this.rightFixedColumnsCellStyles[column.id];
       if (rightColumn) {
         return {
           right: rightColumn.offset + 'px'
@@ -293,9 +279,6 @@ export default {
     getHeaderCellClass(rowIndex, columnIndex, row, column) {
       const classes = [column.id, column.order, column.headerAlign, column.className, column.labelClassName];
 
-      // if (rowIndex === 0 && this.isCellHidden(columnIndex, row)) {
-      //   classes.push('is-hidden');
-      // }
       if (this.isCellFixed(column)) {
         classes.push('is-fixed-cell');
       }
